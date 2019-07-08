@@ -59,3 +59,11 @@ typings/
 
 # next.js build output
 .next
+
+# other
+build
+.cache
+dist
+ipfs.cmd
+coverage.json
+coverage
