@@ -45,6 +45,7 @@ const providerForNetwork = network => () => {
 module.exports = {
   networks: {
     development: {
+      network_id: '*',
       host: 'localhost',
       port: '38401',
     },

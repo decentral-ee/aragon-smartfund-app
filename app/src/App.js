@@ -5,18 +5,27 @@ import styled from 'styled-components'
 
 function App() {
   const { api, appState } = useAragonApi()
-  const { count, syncing } = appState
+  const { strategy, nav, syncing } = appState
   return (
     <Main>
       <BaseLayout>
         {syncing && <Syncing />}
-        <Count>Count: {count}</Count>
+        <Strategy>Strategy: {strategy}</Strategy>
+        <Nav>NAV: {nav}</Nav>
         <Buttons>
           <Button mode="secondary" onClick={() => api.decrement(1)}>
-            Decrement
+            Subscribe
           </Button>
           <Button mode="secondary" onClick={() => api.increment(1)}>
-            Increment
+            Redeem
+          </Button>
+        </Buttons>
+        <Buttons>
+          <Button mode="secondary" onClick={() => setStrategy(api)}>
+            Set Strategy
+          </Button>
+          <Button mode="secondary" onClick={() => api.decrement(1)}>
+            Rebalance
           </Button>
         </Buttons>
       </BaseLayout>
@@ -32,7 +41,11 @@ const BaseLayout = styled.div`
   flex-direction: column;
 `
 
-const Count = styled.h1`
+const Nav = styled.h1`
+  font-size: 30px;
+`
+
+const Strategy = styled.h1`
   font-size: 30px;
 `
 
@@ -48,5 +61,10 @@ const Syncing = styled.div.attrs({ children: 'Syncing…' })`
   top: 15px;
   right: 20px;
 `
+
+async function setStrategy(api) {
+  await api.proposeStrategy('unicorn').toPromise()
+  await api.approveStrategy().toPromise()
+}
 
 export default App

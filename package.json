@@ -8,7 +8,8 @@
     "@aragon/apps-token-manager": "^2.1.0",
     "@aragon/apps-voting": "^2.1.0",
     "@aragon/apps-vault": "^4.1.0",
-    "@aragon/apps-finance": "^3.0.0"
+    "@aragon/apps-finance": "^3.0.0",
+    "openzeppelin-solidity": "2.3.0"
   },
   "devDependencies": {
     "@aragon/cli": "^5.9.3",
@@ -27,18 +28,19 @@
     "eslint-plugin-standard": "^4.0.0",
     "ethlint": "^1.2.4",
     "prettier": "^1.18.2",
-    "solidity-coverage": "^0.5.11"
+    "solidity-coverage": "^0.5.11",
+    "openzeppelin-test-helpers": "^0.4.0"
   },
   "scripts": {
     "prepare": "cd app && npm install && cd ..",
     "devchain": "aragon devchain --port 38401",
-    "start:app": "cd app && APP_HTTP_PORT=8401 npm start && cd ..",
-    "start:aragon": "npm run aragon:run:http:template",
+    "dev:app": "cd app && APP_HTTP_PORT=8401 npm start && cd ..",
+    "dev:aragon": "npm run aragon:run:http:local",
     "aragon:run": "REACT_APP_DEFAULT_ETH_NODE=ws://localhost:38401 aragon run",
     "aragon:run:ipfs": "npm run aragon:run -- --client-port 8400",
     "aragon:run:http": "npm run aragon:run -- --client-port 8400 --http localhost:8401 --http-served-from ./dist",
-    "aragon:run:ipfs:template": "npm run aragon:run:ipfs -- --template Template --template-init @ARAGON_ENS",
-    "aragon:run:http:template": "npm run aragon:run:http -- --template Template --template-init @ARAGON_ENS",
+    "aragon:run:ipfs:local": "npm run aragon:run:ipfs -- --template LocalTemplate --template-init @ARAGON_ENS",
+    "aragon:run:http:local": "npm run aragon:run:http -- --template LocalTemplate --template-init @ARAGON_ENS",
     "test": "cross-env TRUFFLE_TEST=true npm run ganache-cli:test",
     "compile": "aragon contracts compile",
     "build": "cd app && npm run build && cd ..",

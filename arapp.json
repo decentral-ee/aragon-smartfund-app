@@ -6,13 +6,13 @@
       "params": []
     },
     {
-      "name": "Propose strategy change",
-      "id": "PROPOSE_STRATEGY_CHANGE_ROLE",
+      "name": "Manage the fund",
+      "id": "FUND_MANAGER_ROLE",
       "params": []
     },
     {
-      "name": "Approve strategy change",
-      "id": "APPROVE_STRATEGY_CHANGE_ROLE",
+      "name": "Change fund strategy",
+      "id": "STRATEGY_CHANGE_ROLE",
       "params": []
     }
   ],

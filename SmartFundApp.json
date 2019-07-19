@@ -1,0 +1,64 @@
+{
+	"roles": [
+		{
+			"id": "FUND_MANAGER_ROLE",
+			"bytes": "0x0b84ee281e5cf521a9ad54a86fafe78946b157177e231bd8ae785af4d3b3620f",
+			"name": "",
+			"params": []
+		},
+		{
+			"id": "STRATEGY_CHANGE_ROLE",
+			"bytes": "0x278b04141419ae422d1767a2377928b9bb6fb4439239507dbabbe4c94cbd7954",
+			"name": "",
+			"params": []
+		},
+		{
+			"id": "INVESTMENT_ROLE",
+			"bytes": "0x6f1611f77e1984db65378f2ec1b00e7ddb155be085c703570e4b07e612a6b6d9",
+			"name": "",
+			"params": []
+		}
+	],
+	"functions": [
+		{
+			"sig": "initialize()",
+			"roles": [],
+			"notice": null
+		},
+		{
+			"sig": "proposeStrategy(string)",
+			"roles": [
+				"FUND_MANAGER_ROLE"
+			],
+			"notice": null
+		},
+		{
+			"sig": "approveStrategy()",
+			"roles": [
+				"STRATEGY_CHANGE_ROLE"
+			],
+			"notice": null
+		},
+		{
+			"sig": "rebalance()",
+			"roles": [
+				"FUND_MANAGER_ROLE"
+			],
+			"notice": null
+		},
+		{
+			"sig": "subscribe()",
+			"roles": [
+				"INVESTMENT_ROLE"
+			],
+			"notice": null
+		},
+		{
+			"sig": "redeem()",
+			"roles": [
+				"INVESTMENT_ROLE"
+			],
+			"notice": null
+		}
+	]
+}

@@ -14,9 +14,9 @@ api.store(
       case INITIALIZATION_TRIGGER:
         // newState = { count: await getValue() }
         break
-      // case 'Increment':
-      //   newState = { count: await getValue() }
-      //   break
+      case 'StrategyChanged':
+        newState = { strategy: await getStrategy() }
+        break
       // case 'Decrement':
       //   newState = { count: await getValue() }
       //   break
@@ -31,7 +31,7 @@ api.store(
     of({ event: INITIALIZATION_TRIGGER }),
   ]
 )
-//
-// async function getValue() {
-//   return parseInt(await api.call('value').toPromise(), 10)
-// }
+
+async function getStrategy() {
+  return api.call('strategy').toPromise()
+}
