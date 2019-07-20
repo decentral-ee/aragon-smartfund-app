@@ -3,18 +3,21 @@ pragma solidity ^0.4.24;
 import "@aragon/os/contracts/apps/AragonApp.sol";
 import "@aragon/os/contracts/lib/math/SafeMath.sol";
 
-import "../uniswap/contracts/UniswapExchangeInterface.sol";
-import "../uniswap/contracts/UniswapFactoryInterface.sol";
+import "./Strategy.sol";
 
 contract SmartFundApp is AragonApp {
     using SafeMath for uint256;
 
     /// Events
-    event StrategyChanged();
+    event StrategyProposed(Strategy indexed proposedStrategy);
+    event StrategyChanged(Strategy indexed newStrategy);
+    event Subscribed(address indexed investor, uint256 amount);
+    event Redeemed(address indexed investor, uint256 amount);
+    event Rebalanced();
 
     /// State
-    string public proposedStrategy;
-    string public strategy;
+    Strategy public proposedStrategy;
+    Strategy public currentStrategy;
 
     /// ACL
     bytes32 constant public INVESTMENT_ROLE = keccak256("INVESTMENT_ROLE");
@@ -25,27 +28,46 @@ contract SmartFundApp is AragonApp {
         initialized();
     }
 
-    function proposeStrategy(string strategy) external auth(FUND_MANAGER_ROLE) {
-      require(bytes(proposedStrategy).length == 0, "Strategy is waiting to be approved");
-      proposedStrategy = strategy;
+    function proposeStrategy(StrategyFactory strategyFactory, bytes configurationCall) external auth(FUND_MANAGER_ROLE) {
+      require(proposedStrategy == address(0), "Strategy is waiting to be approved");
+      proposedStrategy = strategyFactory.create(this);
+      (bool success, ) = proposedStrategy.call(configurationCall);
+      require(success, "Strategy configuration failed");
+      emit StrategyProposed(proposedStrategy);
     }
 
     function approveStrategy() external auth(STRATEGY_CHANGE_ROLE) {
-      require(bytes(proposedStrategy).length != 0, "No strategy is waiting to be approved");
-      strategy = proposedStrategy;
+      require(proposedStrategy != address(0), "No strategy is waiting to be approved");
+
+      Strategy oldStrategy = currentStrategy;
+
+      if (oldStrategy != address(0)) {
+        oldStrategy.handover(proposedStrategy);
+      }
+
+      currentStrategy = proposedStrategy;
       delete proposedStrategy;
-      emit StrategyChanged();
+
+      emit StrategyChanged(currentStrategy);
     }
 
-    function rebalance() external auth(FUND_MANAGER_ROLE) {
-
+    function subscribe() external payable auth(INVESTMENT_ROLE) hasStrategy {
+      uint256 amount = currentStrategy.subscribe.value(msg.value)(msg.sender);
+      emit Subscribed(msg.sender, amount);
     }
 
-    function subscribe() external auth(INVESTMENT_ROLE) {
-
+    function redeem(uint256 amount) external auth(INVESTMENT_ROLE) hasStrategy {
+      currentStrategy.redeem(msg.sender, amount);
+      emit Redeemed(msg.sender, amount);
     }
 
-    function redeem() external auth(INVESTMENT_ROLE) {
+    function rebalance() external auth(FUND_MANAGER_ROLE) hasStrategy {
+      currentStrategy.rebalance();
+      emit Rebalanced();
+    }
 
+    modifier hasStrategy() {
+      require(currentStrategy != address(0), "There is no strategy yet");
+      _;
     }
 }

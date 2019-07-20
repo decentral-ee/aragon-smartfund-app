@@ -47,7 +47,7 @@ module.exports = {
     development: {
       network_id: '*',
       host: 'localhost',
-      port: '38401',
+      port: 38401,
     },
     mainnet: {
       network_id: 1,
@@ -63,6 +63,20 @@ module.exports = {
       port: 8555,
       gas: 0xffffffffff,
       gasPrice: 0x01,
+    },
+  },
+  compilers: {
+    solc: {
+      version: '0.4.24', // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true, // Use what you've installed locally with docker (default: false)
+      settings: {
+        // See the solidity docs for advice about optimization and evmVersion
+        optimizer: {
+          enabled: true,
+          runs: 200,
+        },
+        // evmVersion: "byzantium"
+      },
     },
   },
 }
