@@ -12,14 +12,19 @@ api.store(
 
     switch (event.event) {
       case INITIALIZATION_TRIGGER:
-        // newState = { count: await getValue() }
+        console.log('!!!! INITIALIZATION_TRIGGER 1')
+        newState = {
+          strategy: await api.call('strategyName').toPromise(),
+        }
+        console.log('!!!! INITIALIZATION_TRIGGER 2', newState)
         break
       case 'StrategyChanged':
-        newState = { strategy: await getStrategy() }
+        newState = {
+          strategy: await api.call('strategyName').toPromise(),
+          unitPrice: await api.call('unitPrice').toPromise(),
+          nav: await api.call('nav').toPromise(),
+        }
         break
-      // case 'Decrement':
-      //   newState = { count: await getValue() }
-      //   break
       default:
         newState = state
     }
@@ -31,7 +36,3 @@ api.store(
     of({ event: INITIALIZATION_TRIGGER }),
   ]
 )
-
-async function getStrategy() {
-  return api.call('strategy').toPromise()
-}

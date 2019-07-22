@@ -18,7 +18,7 @@
   ],
   "environments": {
     "default": {
-      "network": "development",
+      "network": "devchain",
       "appName": "smartfund.aragonpm.eth",
       "wsRPC": "ws://localhost:38401"
     },

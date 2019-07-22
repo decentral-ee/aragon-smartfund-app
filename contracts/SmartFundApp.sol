@@ -11,7 +11,7 @@ contract SmartFundApp is AragonApp {
     /// Events
     event StrategyProposed(Strategy indexed proposedStrategy);
     event StrategyChanged(Strategy indexed newStrategy);
-    event Subscribed(address indexed investor, uint256 amount);
+    event Subscribed(address indexed investor, uint256 units, uint256 unitPrice);
     event Redeemed(address indexed investor, uint256 amount);
     event Rebalanced();
 
@@ -51,9 +51,29 @@ contract SmartFundApp is AragonApp {
       emit StrategyChanged(currentStrategy);
     }
 
+    function strategyName() external view returns (string) {
+      return currentStrategy.name();
+    }
+
+    function totalUnitCount() external view returns (uint256) {
+      return currentStrategy.totalUnitCount();
+    }
+
+    function unitPrice() external view returns (uint256) {
+      return currentStrategy.unitPrice();
+    }
+
+    function nav() external view returns (uint256) {
+      return currentStrategy.nav();
+    }
+
+    function unitCount(address investor) external view returns (uint256 units) {
+      return currentStrategy.unitCount(investor);
+    }
+
     function subscribe() external payable auth(INVESTMENT_ROLE) hasStrategy {
-      uint256 amount = currentStrategy.subscribe.value(msg.value)(msg.sender);
-      emit Subscribed(msg.sender, amount);
+      (uint256 units, uint256 currentUnitPrice) = currentStrategy.subscribe.value(msg.value)(msg.sender);
+      emit Subscribed(msg.sender, units, currentUnitPrice);
     }
 
     function redeem(uint256 amount) external auth(INVESTMENT_ROLE) hasStrategy {

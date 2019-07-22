@@ -106,7 +106,7 @@ contract('SmartFundApp', accounts => {
     const demoStrategyFactory = await DemoStrategyFactory.new()
     await app.proposeStrategy(
       demoStrategyFactory.address,
-      DemoStrategyContract.methods.configure([], []).encodeABI(),
+      DemoStrategyContract.methods.configure(ANY_ADDRESS, [], []).encodeABI(),
       {
         from: firstAccount,
       }
@@ -119,7 +119,7 @@ contract('SmartFundApp', accounts => {
     const demoStrategyFactory = await DemoStrategyFactory.new()
     await app.proposeStrategy(
       demoStrategyFactory.address,
-      DemoStrategyContract.methods.configure().encodeABI(),
+      DemoStrategyContract.methods.configure(ANY_ADDRESS, [], []).encodeABI(),
       {
         from: firstAccount,
       }

@@ -40,5 +40,4 @@ ganache-cli \
   --mnemonic 'explain tackle mirror kit van hammer degree position ginger unfair soup bonus' \
   --accounts 10 \
   --defaultBalanceEther 1000000000000 \
-  --gasPrice 5000000000 \
-  --gasLimit 8000000
+  --gasLimit 50000000

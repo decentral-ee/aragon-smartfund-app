@@ -5,7 +5,14 @@ import App from './App'
 
 const reducer = state => {
   if (state === null) {
-    return { nav: 0, strategy: 'None', syncing: true }
+    return {
+      strategyName: '',
+      unitPrice: 0,
+      nav: 0,
+      unitCount: 0,
+      totalUnitCount: 0,
+      syncing: false,
+    }
   }
   return state
 }
