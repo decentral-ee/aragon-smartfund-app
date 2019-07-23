@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useAragonApi } from '@aragon/api-react'
 import { Main, Field, TextInput, Button } from '@aragon/ui'
 import styled from 'styled-components'
+import { first } from 'rxjs/operators'
 import { fromDecimals, toDecimals } from '../lib/math-utils'
 
 function App() {
@@ -17,23 +18,40 @@ function App() {
         <FundInfoPanel>
           <PanelTitle>Fund Info</PanelTitle>
           <FunctionGroup>
-            <Info>Strategy: {strategyName}</Info>
-            <Info>NAV: {wad4human(nav)} (ETH)</Info>
-            <Info>Unit Price: {unitPrice4human(unitPrice)} (ETH) </Info>
-            <Info>Total Unit Count: {unitCount4human(totalUnitCount)}</Info>
+            <Info>
+              <Label>Strategy:</Label>
+              <Value>{strategyName}</Value>
+            </Info>
+            <Info>
+              <Label>NAV:</Label>
+              <Value>{wad4human(nav)} (ETH)</Value>
+            </Info>
+            <Info>
+              <Label>Unit Price:</Label>
+              <Value>{unitPrice4human(unitPrice)} (ETH)</Value>
+            </Info>
+            <Info>
+              <Label>Total Unit Count:</Label>
+              <Value>{unitCount4human(totalUnitCount)}</Value>
+            </Info>
           </FunctionGroup>
         </FundInfoPanel>
 
         <InvestorPanel>
           <PanelTitle>For Investors</PanelTitle>
           <FunctionGroup>
-            <Info>Unit Count: {unitCount4human(unitCount)}</Info>
             <Info>
-              Current Value:{' '}
-              {Number(
-                fromDecimals(unitCount, 6) * fromDecimals(unitPrice, 12)
-              ).toFixed(4)}
-              (ETH)
+              <Label>Unit Count:</Label>
+              <Value>{unitCount4human(unitCount)}</Value>
+            </Info>
+            <Info>
+              <Label>Current Value:</Label>
+              <Value>
+                {Number(
+                  fromDecimals(unitCount, 6) * fromDecimals(unitPrice, 12)
+                ).toFixed(4)}{' '}
+                (ETH)
+              </Value>
             </Info>
           </FunctionGroup>
           <FunctionGroup>
@@ -52,14 +70,17 @@ function App() {
             </Button>
           </FunctionGroup>
           <FunctionGroup>
-            <Field label="Redemption Amount (ETH)">
+            <Field label="Redemption Amount (Units)">
               <TextInput.Number
                 value={redemptionAmount}
                 onChange={event => setRedemptionAmount(event.target.value)}
                 wide
               />
             </Field>
-            <Button mode="secondary" onClick={() => subscribeFund(api)}>
+            <Button
+              mode="secondary"
+              onClick={() => redeemFund(api, redemptionAmount)}
+            >
               Redeem
             </Button>
           </FunctionGroup>
@@ -142,10 +163,19 @@ const PanelTitle = styled.div`
   font-weight: bold;
   text-align: center;
 `
+const Label = styled.div`
+  display: inline;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+`
 
-const Info = styled.h1`
+const Value = styled.div`
+  display: inline;
   font-size: 18px;
 `
+
+const Info = styled.div``
 
 const FunctionGroup = styled.div`
   margin: 10px;
@@ -168,19 +198,23 @@ async function requestStrategyApproval(api) {
 }
 
 async function subscribeFund(api, ethAmount) {
-  await api.subscribe({ value: toDecimals(ethAmount, 18) })
+  await api.subscribeUnits({ value: toDecimals(ethAmount, 18) }).toPromise()
+}
+
+async function redeemFund(api, nUnits) {
+  await api.redeemUnits(toDecimals(nUnits, 6)).toPromise()
 }
 
 function wad4human(wad) {
-  return Number(fromDecimals(wad, 18)).toFixed(4)
+  return Number(fromDecimals(wad, 18)).toFixed(6)
 }
 
 function unitPrice4human(p) {
-  return Number(fromDecimals(p, 12)).toFixed(4)
+  return Number(fromDecimals(p, 12)).toFixed(6)
 }
 
 function unitCount4human(p) {
-  return Number(fromDecimals(p, 6)).toFixed(4)
+  return Number(fromDecimals(p, 6)).toFixed(6)
 }
 
 export default App

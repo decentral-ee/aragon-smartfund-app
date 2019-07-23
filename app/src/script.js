@@ -15,13 +15,17 @@ api.store(
       switch (event.event) {
         case INITIALIZATION_TRIGGER:
           newState = {
+            ...state,
             ...(await fetchFundStaticInfo()),
             ...(await fetchFundNavInfo()),
             ...(await fetchFundInvestorInfo()),
           }
           break
+        case 'StrategyProposed':
+          break
         case 'StrategyChanged':
           newState = {
+            ...state,
             ...(await fetchFundStaticInfo()),
             ...(await fetchFundNavInfo()),
             ...(await fetchFundInvestorInfo()),
@@ -29,11 +33,20 @@ api.store(
           break
         case 'Subscribed':
           newState = {
+            ...state,
+            ...(await fetchFundNavInfo()),
+            ...(await fetchFundInvestorInfo()),
+          }
+          break
+        case 'Redeemed':
+          newState = {
+            ...state,
             ...(await fetchFundNavInfo()),
             ...(await fetchFundInvestorInfo()),
           }
           break
         default:
+          console.log('Unhandled event', event.event)
           newState = state
       }
     } catch (e) {

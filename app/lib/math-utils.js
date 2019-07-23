@@ -38,7 +38,7 @@ function splitDecimalNumber(num) {
  * @param {bool} [options.truncate=true] Should the number be truncated to its decimal base
  * @returns {string} formatted number
  */
-export function fromDecimals(num, decimals, { truncate = true } = {}) {
+export function fromDecimals(num, decimals, { truncate = false } = {}) {
   const [whole, dec] = splitDecimalNumber(num)
   if (!whole && !dec) {
     return '0'
@@ -72,7 +72,7 @@ export function fromDecimals(num, decimals, { truncate = true } = {}) {
  * @param {bool} [options.truncate=true] Should the number be truncated to its decimal base
  * @returns {string} formatted number
  */
-export function toDecimals(num, decimals, { truncate = true } = {}) {
+export function toDecimals(num, decimals, { truncate = false } = {}) {
   const [whole, dec] = splitDecimalNumber(num)
   if (!whole && !dec) {
     return '0'

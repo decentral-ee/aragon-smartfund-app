@@ -11,8 +11,8 @@ contract SmartFundApp is AragonApp {
     /// Events
     event StrategyProposed(Strategy indexed proposedStrategy);
     event StrategyChanged(Strategy indexed newStrategy);
-    event Subscribed(address indexed investor, uint256 units, uint256 unitPrice);
-    event Redeemed(address indexed investor, uint256 amount);
+    event Subscribed(address indexed investor, uint256 nUnits, uint256 unitPrice);
+    event Redeemed(address indexed investor, uint256 nUnits);
     event Rebalanced();
 
     /// State
@@ -46,7 +46,7 @@ contract SmartFundApp is AragonApp {
       }
 
       currentStrategy = proposedStrategy;
-      delete proposedStrategy;
+      proposedStrategy = Strategy(address(0));
 
       emit StrategyChanged(currentStrategy);
     }
@@ -76,14 +76,14 @@ contract SmartFundApp is AragonApp {
         currentStrategy.unitCount(investor) : 0;
     }
 
-    function subscribe() external payable auth(INVESTMENT_ROLE) hasStrategy {
-      (uint256 units, uint256 currentUnitPrice) = currentStrategy.subscribe.value(msg.value)(msg.sender);
-      emit Subscribed(msg.sender, units, currentUnitPrice);
+    function subscribeUnits() external payable auth(INVESTMENT_ROLE) hasStrategy {
+      (uint256 nUnits, uint256 currentUnitPrice) = currentStrategy.subscribe.value(msg.value)(msg.sender);
+      emit Subscribed(msg.sender, nUnits, currentUnitPrice);
     }
 
-    function redeem(uint256 amount) external auth(INVESTMENT_ROLE) hasStrategy {
-      currentStrategy.redeem(msg.sender, amount);
-      emit Redeemed(msg.sender, amount);
+    function redeemUnits(uint256 nUnits) external auth(INVESTMENT_ROLE) hasStrategy {
+      currentStrategy.redeem(msg.sender, nUnits);
+      emit Redeemed(msg.sender, nUnits);
     }
 
     function rebalance() external auth(FUND_MANAGER_ROLE) hasStrategy {

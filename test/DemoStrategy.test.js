@@ -23,7 +23,7 @@ function unitCountBN(count) {
 }
 
 function unitCount4human(count) {
-  return Number(web3.utils.fromWei(count, 'mwei')).toFixed(4)
+  return Number(web3.utils.fromWei(count, 'mwei')).toFixed(6)
 }
 
 contract('DemoStrategy', accounts => {
@@ -107,17 +107,36 @@ contract('DemoStrategy', accounts => {
     assert.equal(unitPrice4human(await st.unitPrice.call()), '0.001000')
     assert.isTrue(web3.utils.toBN('0').eq(await st.totalUnitCount.call()))
     assert.isTrue(web3.utils.toBN('0').eq(await st.nav.call()))
-    await web3tx(st.subscribe, 'st.subscribe')(investor1, {
+
+    await web3tx(st.subscribe, 'st.subscribe(0.01) by investor1')(investor1, {
       from: fund,
       value: web3.utils.toWei('0.01', 'ether'),
     })
-    await web3tx(st.subscribe, 'st.subscribe')(investor2, {
+    await web3tx(st.subscribe, 'st.subscribe(0.01) by investor2')(investor2, {
       from: fund,
       value: web3.utils.toWei('0.01', 'ether'),
     })
     await printSt()
     assert.isTrue((await st.unitCount.call(investor1)).gte(unitCountBN(10)))
     assert.isTrue((await st.unitCount.call(investor2)).gte(unitCountBN(10)))
+
+    const balanceBefore = web3.utils.toBN(await web3.eth.getBalance(investor1))
+    console.log('investor1 balance before:', wad4human(balanceBefore))
+    await web3tx(st.redeem, 'st.redeem(0.005) by investor1')(
+      investor1,
+      unitCountBN(5),
+      {
+        from: fund,
+      }
+    )
+    await printSt()
+    const balanceAfter = web3.utils.toBN(await web3.eth.getBalance(investor1))
+    console.log('investor1 balance after:', wad4human(balanceAfter))
+    assert.isTrue(
+      balanceAfter
+        .sub(balanceBefore)
+        .gte(web3.utils.toBN(web3.utils.toWei('0.0045', 'ether')))
+    )
   })
 
   // it('rebalance', async () => {

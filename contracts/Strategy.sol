@@ -18,11 +18,11 @@ contract Strategy {
 
   function nav() external view returns (uint256);
 
-  function unitCount(address investor) external view returns (uint256 units);
+  function unitCount(address investor) external view returns (uint256 nUnits);
 
   function subscribe(address investor) payable external returns (uint256 newUnits, uint256 currentUnitPrice);
 
-  function redeem(address investor, uint256 amount) external;
+  function redeem(address investor, uint256 nUnits) external;
 
   function rebalance() external;
 

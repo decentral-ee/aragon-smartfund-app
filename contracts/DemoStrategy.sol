@@ -12,7 +12,7 @@ contract DemoStrategy is Strategy {
   uint32 TOTAL_PROPORTIONS = 1000000;
 
   UniswapFactoryInterface public uniswapFactory;
-  uint256 nUnits;
+  uint256 totalUnits;
   address[] public tokens;
   mapping (address => uint32) public proportions;
   mapping (address => address) exchanges;
@@ -82,14 +82,14 @@ contract DemoStrategy is Strategy {
   }
 
   function totalUnitCount() external view returns (uint256) {
-    return nUnits;
+    return totalUnits;
   }
 
   function unitPrice() external view returns (uint256 unitPrice) {
     (unitPrice, ) = _unitPriceNav();
   }
 
-  function unitCount(address investor) external view returns (uint256) {
+  function unitCount(address investor) external view returns (uint256 nUnits) {
     return units[investor];
   }
 
@@ -100,18 +100,25 @@ contract DemoStrategy is Strategy {
     uint256 nav;
     (currentUnitPrice, nav) = _unitPriceNav();
     newUnits = msg.value / currentUnitPrice;
-    nUnits += newUnits;
+    totalUnits += newUnits;
     units[investor] += newUnits;
     _rebalance(nav + msg.value);
   }
 
-  function redeem(address investor, uint256 amount) external onlyByFund {
-    // TODO
+  function redeem(address investor, uint256 nUnits) external onlyByFund {
+    require(nUnits > 0, "Put at least 1 unit for sale");
+    require(units[investor] >= nUnits, "Not enough units to redeem");
+    (uint256 currentUnitPrice, uint256 nav) = _unitPriceNav();
+    uint256 estimatedValue = currentUnitPrice * nUnits;
+    totalUnits -= nUnits;
+    units[investor] -= nUnits;
+    _rebalance(nav > estimatedValue ? nav - estimatedValue : 0);
+    investor.transfer(MIN(estimatedValue, this.balance));
   }
 
   function rebalance() external onlyByFund {
     uint256 nav = _nav();
-    _rebalance(nav + msg.value);
+    _rebalance(nav);
   }
 
   function handover(Strategy newStrategy) external onlyByFund {
@@ -131,10 +138,10 @@ contract DemoStrategy is Strategy {
 
   function _unitPriceNav() private view returns (uint256 unitPrice, uint256 nav) {
     nav = _nav();
-    if (nUnits == 0) {
+    if (totalUnits == 0) {
       unitPrice =  1 finney / (10 ** UNIT_COUNT_DECIMALS);
     } else {
-      unitPrice = nav / nUnits;
+      unitPrice = nav / totalUnits;
     }
   }
 
@@ -161,19 +168,16 @@ contract DemoStrategy is Strategy {
         ethSoldAmount[i] = exchange.getEthToTokenOutputPrice(tokensBoughtAmounts[i]);
         totalEthSold += ethSoldAmount[i];
       } else if (targetBalance < currentBalance) {
-        exchange.tokenToEthSwapInput(currentBalance - targetBalance, 0, now + 1 hours);
+        token.approve(address(exchange), currentBalance - targetBalance);
+        exchange.tokenToEthSwapInput(currentBalance - targetBalance, 1, now + 1 hours);
       }
     }
     // buy assets
     uint256 realEthBalance = this.balance;
-    require(realEthBalance > 0, "huhhh 0`");
     for (i = 0; i < tokens.length; ++i) {
       token = ERC20(tokens[i]);
       exchange = UniswapExchangeInterface(exchanges[token]);
       if (tokensBoughtAmounts[i] > 0) {
-        require(ethSoldAmount[i] > 0, "huhhh 1");
-        require(ethSoldAmount[i] < totalEthSold, "huhhh 2");
-        require(realEthBalance * ethSoldAmount[i] / totalEthSold > 0, "huhhh 3");
         exchange.ethToTokenSwapInput.value(
           MIN(
             this.balance,
