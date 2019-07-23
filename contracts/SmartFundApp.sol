@@ -52,23 +52,28 @@ contract SmartFundApp is AragonApp {
     }
 
     function strategyName() external view returns (string) {
-      return currentStrategy.name();
+      return address(currentStrategy) != address(0) ?
+        currentStrategy.name() : "";
     }
 
     function totalUnitCount() external view returns (uint256) {
-      return currentStrategy.totalUnitCount();
+      return address(currentStrategy) != address(0) ?
+        currentStrategy.totalUnitCount() : 0;
     }
 
     function unitPrice() external view returns (uint256) {
-      return currentStrategy.unitPrice();
+      return address(currentStrategy) != address(0) ?
+        currentStrategy.unitPrice() : 0;
     }
 
     function nav() external view returns (uint256) {
-      return currentStrategy.nav();
+      return address(currentStrategy) != address(0) ?
+        currentStrategy.nav() : 0;
     }
 
     function unitCount(address investor) external view returns (uint256 units) {
-      return currentStrategy.unitCount(investor);
+      return address(currentStrategy) != address(0) ?
+        currentStrategy.unitCount(investor) : 0;
     }
 
     function subscribe() external payable auth(INVESTMENT_ROLE) hasStrategy {

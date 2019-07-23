@@ -9,9 +9,8 @@ const reducer = state => {
       strategyName: '',
       unitPrice: 0,
       nav: 0,
-      unitCount: 0,
       totalUnitCount: 0,
-      syncing: false,
+      unitCount: 0,
     }
   }
   return state
