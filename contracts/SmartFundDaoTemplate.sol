@@ -19,7 +19,7 @@ import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 import "./TemplateBase.sol";
 import "./SmartFundApp.sol";
 
-contract LocalTemplate is TemplateBase {
+contract SmartFundDaoTemplate is TemplateBase {
     MiniMeTokenFactory tokenFactory;
 
     uint64 constant PCT = 10 ** 16;
