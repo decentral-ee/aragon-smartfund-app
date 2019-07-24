@@ -52,5 +52,16 @@
     "lint": "eslint . & solium --dir ./contracts",
     "lint:fix": "eslint . --fix & solium --dir ./contracts --fix",
     "coverage": "SOLIDITY_COVERAGE=true npm run ganache-cli:test"
-  }
+  },
+  "keywords": [
+      "aragon",
+      "ethereum",
+      "defi",
+      "finance",
+      "solidity",
+      "decentral.ee"
+  ],
+  "author": "Miao ZhiCheng <miao@decentral.ee>",
+  "license": "MIT",
+  "homepage": "https://www.decentral.ee"
 }
