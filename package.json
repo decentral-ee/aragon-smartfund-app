@@ -54,12 +54,12 @@
     "coverage": "SOLIDITY_COVERAGE=true npm run ganache-cli:test"
   },
   "keywords": [
-      "aragon",
-      "ethereum",
-      "defi",
-      "finance",
-      "solidity",
-      "decentral.ee"
+    "aragon",
+    "ethereum",
+    "defi",
+    "finance",
+    "solidity",
+    "decentral.ee"
   ],
   "author": "Miao ZhiCheng <miao@decentral.ee>",
   "license": "MIT",
